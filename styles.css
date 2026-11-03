@@ -135,6 +135,70 @@ button { cursor: pointer; touch-action: manipulation; }
 
 .progress-perfect { color: var(--gold); }
 
+/* ---------- Daily plan ---------- */
+
+.card.plan { margin-top: 16px; padding: 0; }
+
+.plan summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  padding: 0 16px;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+
+.plan summary::-webkit-details-marker { display: none; }
+
+.plan summary::after {
+  content: "Hide";
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.plan:not([open]) summary::after { content: "Show"; }
+
+.plan ul { margin: 0; padding: 0 16px 4px; list-style: none; }
+
+.plan-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0 12px 14px;
+  border-top: 1px solid var(--border);
+  box-shadow: inset 4px 0 0 var(--cat);
+}
+
+.plan-text { display: grid; flex: 1; gap: 2px; }
+
+.plan-heading {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.plan-main { font-weight: 600; }
+.plan-detail { color: var(--muted); font-size: 0.92rem; }
+
+.swap {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.swap svg { width: 20px; height: 20px; }
+
 /* ---------- Habit toggles ---------- */
 
 .habit-list,
@@ -207,7 +271,10 @@ button { cursor: pointer; touch-action: manipulation; }
 }
 
 .habit[aria-pressed="true"] .check::after { opacity: 1; }
-.habit[aria-pressed="true"] .habit-cat { color: rgb(255 255 255 / 0.85); }
+.habit-target { color: var(--muted); font-size: 0.92rem; }
+
+.habit[aria-pressed="true"] .habit-cat,
+.habit[aria-pressed="true"] .habit-target { color: rgb(255 255 255 / 0.85); }
 
 .empty { padding: 32px 16px; color: var(--muted); text-align: center; }
 .empty a { color: var(--gold); font-weight: 600; }
@@ -278,12 +345,17 @@ button { cursor: pointer; touch-action: manipulation; }
 
 .add-form,
 .archived,
+.reminder,
 .danger { margin-top: 24px; }
 
 .add-form { display: grid; gap: 12px; }
 
 .add-form h2,
+.reminder h2,
 .danger h2 { margin: 0; font-size: 1.1rem; }
+
+.reminder p { margin: 8px 0 0; color: var(--muted); }
+.reminder strong { color: var(--text); }
 
 .archived summary {
   display: flex;

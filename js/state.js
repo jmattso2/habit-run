@@ -48,6 +48,32 @@ const State = (() => {
     return done.has(id);
   }
 
+  // Plans for days before dayKey, newest first.
+  function recentPlans(dayKey, count = 4) {
+    return Object.keys(data.plans)
+      .filter((k) => k < dayKey)
+      .sort()
+      .reverse()
+      .slice(0, count)
+      .map((k) => data.plans[k]);
+  }
+
+  // Today's plan is created the first time it's viewed and then stays fixed.
+  // Past days are never back-filled.
+  function planFor(dayKey) {
+    if (!data.plans[dayKey] && dayKey === Dates.todayKey()) {
+      data.plans[dayKey] = Plan.generate(recentPlans(dayKey));
+      persist();
+    }
+    return data.plans[dayKey] || null;
+  }
+
+  function swapPlan(dayKey, slot) {
+    if (!data.plans[dayKey] || dayKey !== Dates.todayKey()) return;
+    data.plans[dayKey] = Plan.swap(data.plans[dayKey], slot, recentPlans(dayKey));
+    persist();
+  }
+
   function uniqueId(label) {
     const base = label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'habit';
     let id = base;
@@ -82,6 +108,6 @@ const State = (() => {
 
   return {
     CATEGORIES, init, habit, activeHabits, archivedHabits, isDone, toggle,
-    addHabit, updateHabit, setArchived, reset,
+    planFor, swapPlan, addHabit, updateHabit, setArchived, reset,
   };
 })();

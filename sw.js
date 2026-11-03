@@ -1,6 +1,6 @@
 // Offline support: answer from the cache right away, then refresh the cache from the network.
 // A new deploy shows up on the second open after it goes live.
-const CACHE = 'habit-run-v1';
+const CACHE = 'habit-run-v2';
 
 const SHELL = [
   './',
@@ -10,6 +10,7 @@ const SHELL = [
   'js/dom.js',
   'js/dates.js',
   'js/storage.js',
+  'js/plan.js',
   'js/state.js',
   'js/today.js',
   'js/settings.js',

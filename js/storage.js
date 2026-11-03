@@ -16,6 +16,7 @@ const Storage = (() => {
       schemaVersion: SCHEMA_VERSION,
       habits: DEFAULT_HABITS.map((h) => ({ ...h })),
       log: {},
+      plans: {},
       settings: { bossTargets: { exercise: 5, reading: 5, food: 15 } },
     };
   }
@@ -27,6 +28,7 @@ const Storage = (() => {
     const data = { ...base, ...raw };
     if (!Array.isArray(data.habits)) data.habits = base.habits;
     if (!data.log || typeof data.log !== 'object') data.log = {};
+    if (!data.plans || typeof data.plans !== 'object') data.plans = {};
     data.settings = { ...base.settings, ...data.settings };
     data.settings.bossTargets = { ...base.settings.bossTargets, ...data.settings.bossTargets };
     data.schemaVersion = SCHEMA_VERSION;

@@ -66,6 +66,13 @@ const Settings = (() => {
         </details>
       ` : ''}
 
+      <section class="card reminder">
+        <h2>Daily reminder</h2>
+        <p>A web app can't schedule its own notifications without a server, so use your phone's built-in reminders:</p>
+        <p><strong>iPhone:</strong> Reminders app → new reminder “Log Habit Run” → turn on Time, set 8:00 PM → Repeat: Daily.</p>
+        <p><strong>Android:</strong> Clock app → Alarm → 8:00 PM, label it “Log Habit Run” → repeat every day.</p>
+      </section>
+
       <section class="card danger">
         <h2>Reset</h2>
         <p>Deletes all habits and check-ins on this phone and restores the defaults.</p>
