@@ -1,6 +1,7 @@
-// Offline support: answer from the cache right away, then refresh the cache from the network.
-// A new deploy shows up on the second open after it goes live.
-const CACHE = 'habit-run-v2';
+// Offline support: always try the network first so new deploys show up right away,
+// and fall back to the cached copy when offline or the network is too slow.
+const CACHE = 'habit-run-v3';
+const NETWORK_TIMEOUT_MS = 4000;
 
 const SHELL = [
   './',
@@ -22,8 +23,12 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
+  // cache: 'reload' skips the browser's HTTP cache (GitHub Pages allows 10 minutes),
+  // so a new version never gets cached with old files.
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())
+    caches.open(CACHE)
+      .then((cache) => cache.addAll(SHELL.map((url) => new Request(url, { cache: 'reload' }))))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -38,16 +43,24 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
-
-  event.respondWith(caches.open(CACHE).then(async (cache) => {
-    const cached = await cache.match(request, { ignoreSearch: true });
-    const fresh = fetch(request)
-      .then((response) => {
-        if (response.ok) cache.put(request, response.clone());
-        return response;
-      })
-      .catch(() => cached);
-    event.waitUntil(fresh);
-    return cached || fresh;
-  }));
+  event.respondWith(networkFirst(request));
 });
+
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms);
+    promise.then(resolve, reject).finally(() => clearTimeout(timer));
+  });
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(CACHE);
+  try {
+    // 'no-cache' revalidates with the server instead of trusting the HTTP cache.
+    const response = await withTimeout(fetch(request, { cache: 'no-cache' }), NETWORK_TIMEOUT_MS);
+    if (response.ok) cache.put(request, response.clone());
+    return response;
+  } catch {
+    return (await cache.match(request, { ignoreSearch: true })) || Response.error();
+  }
+}

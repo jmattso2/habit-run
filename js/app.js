@@ -37,5 +37,22 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+
+    // Installed apps usually resume instead of reloading, so check for a new version
+    // each time the app comes back to the foreground.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState !== 'visible') return;
+      navigator.serviceWorker.getRegistration().then((reg) => reg?.update()).catch(() => {});
+    });
+
+    // A new version has taken over: reload once to pick it up.
+    // Skipped on the very first install, when there was no previous version.
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloading) return;
+      reloading = true;
+      location.reload();
+    });
   }
 })();
